@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 import random, string,xlrd,time
 import pandas as pd
-import uuid,re,sys
-serial_count=0
+import uuid,sys,pymysql
+serial_count=0 
 start_time = time.time()
 wb = xlrd.open_workbook('anon.xlsx') 
 sheet = wb.sheet_by_index(0)
@@ -20,7 +20,7 @@ except Exception as e:
         try:
             connection=pymysql.connect('localhost','root','Siddalinga@029',sheet.cell_value(1,0))       #database_name=my_db
             query ='SELECT * FROM '+  sheet.cell_value(1,1)                                             #table_name=customer_wi
-            mongo_df= pandas.read_sql_query(query, connection)
+            mongo_df= pd.read_sql_query(query, connection)
         except Exception as e:
             sys.exit('failed to access data')
 print("before anonymization")
