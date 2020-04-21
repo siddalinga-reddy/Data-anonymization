@@ -1,13 +1,14 @@
 from pymongo import MongoClient
-import random, string,xlrd,time
+import random, string,time,xlrd
 import pandas as pd
 import uuid,sys,pymysql
+from sqlalchemy import create_engine
 
 serial_count=0 
 start_time = time.time()
 
 #Details of columns name to be anonymized
-wb = xlrd.open_workbook('anon.xlsx') 
+wb = xlrd.open_workbook(r'C:\Users\reddysi\Pictures\anon.xlsx') 
 sheet = wb.sheet_by_index(0)
 
 #load copy of data from source 
@@ -18,28 +19,29 @@ try:
     df = pd.DataFrame(collection.find())
     df.drop(df.columns[0], axis=1,inplace = True)
 except Exception as e:
-    try :
-        df=pd.read_excel(sheet.cell_value(1,0)+'.'+sheet.cell_value(1,1))                 #file name with type
+    try:
+        connection=pymysql.connect('localhost','root','Siddalinga@029',sheet.cell_value(1,0))       #database_name
+        query ='SELECT * FROM '+  sheet.cell_value(1,1)                                             #table_name
+        df= pd.read_sql_query(query, connection)
     except Exception as e:
-        try:
-            connection=pymysql.connect('localhost','root','Siddalinga@029',sheet.cell_value(1,0))       #database_name
-            query ='SELECT * FROM '+  sheet.cell_value(1,1)                                             #table_name
-            df= pd.read_sql_query(query, connection)
-        except Exception as e:
-            sys.exit('failed to access data')
+        sys.exit('failed to access data')
 print("before anonymization")
 print(df)
 
 #claimToken File is default
 df1=pd.DataFrame()
-df1['original_claimToken']=mongo_df['claimToken']
+df1['original_claimToken']=df['claimToken']
 i=0
-for j in mongo_df['claimToken']:
+for j in df['claimToken']:
     h=str(j[:14])+str(uuid.uuid4())
     df['claimToken']=df['claimToken'].replace([j],h)
-df1['anon_claimToken']=df['claimToken']
-df1.to_excel('reference1.xlsx')              #reference file of claimToken
 
+#reference  for claimToken
+df1['anon_claimToken']=df['claimToken']
+db_data = 'mysql+pymysql://' + 'root' + ':' + 'Siddalinga@029' + '@' + 'localhost' + ':3306/' \
+       + 'my_db' 
+engine = create_engine(db_data)
+df1.to_sql('reference', engine, if_exists='append', index=False)
 #functions for each column
 def serial(a):
     global serial_count
@@ -60,7 +62,7 @@ def name(k):
 
 def systemid(k):
     serial('serial')
-    for p,j in zip(f['serial'],df[k]):
+    for p,j in zip(df['serial'],df[k]):
         h=j[:11]+p
         df[k]=df[k].replace([j],[h])
 
