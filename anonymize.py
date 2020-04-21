@@ -28,7 +28,7 @@ except Exception as e:
 print("before anonymization")
 print(df)
 
-#claimToken File is default
+#claimToken  is default
 cursor=connection.cursor()
 cursor.execute("SELECT * from reference ")
 rows=cursor.fetchall()
