@@ -107,4 +107,5 @@ for  j in range(sheet.nrows):
   
 print("after anonymization")
 print(df)
+df.to_sql('Anonymized_output', engine, if_exists='append', index=False)
 print("--- %s seconds ---" % ((time.time() - start_time)))
