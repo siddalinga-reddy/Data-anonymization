@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 serial_count=0 
 start_time = time.time()
 
-#Details of columns name to be anonymized
+#Details of database columns  to be anonymized
 wb = xlrd.open_workbook(r'C:\Users\reddysi\Pictures\anon.xlsx') 
 sheet = wb.sheet_by_index(0)
 
