@@ -8,7 +8,7 @@ serial_count=0
 start_time = time.time()
 
 #Details of database columns  to be anonymized
-wb = xlrd.open_workbook(r'C:\Users\reddysi\Pictures\anon.xlsx') 
+wb = xlrd.open_workbook(r'configue.xlsx') 
 sheet = wb.sheet_by_index(0)
 
 #load copy of data from source 
